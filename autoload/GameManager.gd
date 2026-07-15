@@ -34,6 +34,31 @@ func _ready() -> void:
 	_load_balance()
 	load_save()
 
+signal balance_reloaded  # 핫리로드 시 Player·Enemy에 알림
+
+var _last_updated_at: float = 0.0
+var _reload_timer:    float = 0.0
+const RELOAD_INTERVAL := 1.5  # JSON 변경 체크 주기(초)
+
+func _process(delta: float) -> void:
+	_reload_timer += delta
+	if _reload_timer >= RELOAD_INTERVAL:
+		_reload_timer = 0.0
+		_check_hot_reload()
+
+func _check_hot_reload() -> void:
+	if not FileAccess.file_exists(BALANCE_PATH): return
+	var file := FileAccess.open(BALANCE_PATH, FileAccess.READ)
+	if not file: return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary: return
+	var ts: float = float(parsed.get("_updated_at", 0.0))
+	if ts > _last_updated_at:
+		_last_updated_at = ts
+		cfg = parsed
+		emit_signal("balance_reloaded")
+		print("[GameManager] balance.json 리로드 완료")
+
 func _load_balance() -> void:
 	if not FileAccess.file_exists(BALANCE_PATH):
 		push_warning("GameManager: balance.json 없음 — 기본값 사용")
@@ -43,6 +68,7 @@ func _load_balance() -> void:
 	var parsed = JSON.parse_string(file.get_as_text())
 	if parsed is Dictionary:
 		cfg = parsed
+		_last_updated_at = float(cfg.get("_updated_at", 0.0))
 
 func start_run() -> void:
 	run_gold = 0

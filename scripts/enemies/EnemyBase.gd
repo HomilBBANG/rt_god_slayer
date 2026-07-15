@@ -24,6 +24,7 @@ func _ready() -> void:
 	add_to_group("enemy")
 	_player = get_tree().get_first_node_in_group("player")
 	_load_cfg()
+	GameManager.balance_reloaded.connect(_load_cfg)
 
 func _load_cfg() -> void:
 	pass  # 서브클래스에서 오버라이드

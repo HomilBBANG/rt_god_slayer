@@ -60,6 +60,11 @@ func _ready() -> void:
 	atk_area.monitoring = false
 	_load_cfg()
 	_apply_upgrades()
+	GameManager.balance_reloaded.connect(_on_balance_reloaded)
+
+func _on_balance_reloaded() -> void:
+	_load_cfg()
+	_apply_upgrades()
 
 func _load_cfg() -> void:
 	var p := "Player"

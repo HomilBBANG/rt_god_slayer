@@ -5,7 +5,7 @@ balance.xlsx → data/balance.json 변환 스크립트.
   python tools/excel_to_godot.py
   또는 변환.bat 더블클릭
 """
-import os, json, sys
+import os, json, sys, time
 import openpyxl
 
 ROOT  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,6 +35,8 @@ def main():
         if sheet in SKIP_SHEETS:
             continue
         config[sheet] = parse_player(wb[sheet])
+
+    config["_updated_at"] = time.time()  # Godot 핫리로드용 타임스탬프
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
