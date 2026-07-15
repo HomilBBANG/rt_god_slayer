@@ -13,7 +13,10 @@ var atk_cd    : float = 1.2
 var exp_reward : int = 15
 var gold_reward : int = 10
 
-var _atk_timer   := 0.0
+var _atk_timer      := 0.0
+var _knockback_t    := 0.0   # 넉백 지속 시간 타이머
+const KNOCKBACK_DUR  = 0.25  # 넉백 동안 chase 정지
+const FLOOR_FRICTION = 900.0 # 바닥 마찰 감속 (px/s²)
 var _player      : CharacterBody2D = null
 var _is_dead     := false
 var _hit_flash   := 0.0
@@ -31,12 +34,21 @@ func _load_cfg() -> void:
 
 func _physics_process(delta: float) -> void:
 	if _is_dead: return
-	_hit_flash = max(0.0, _hit_flash - delta)
+	_hit_flash    = max(0.0, _hit_flash   - delta)
+	_knockback_t  = max(0.0, _knockback_t - delta)
+
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
-	if _player:
-		_chase(delta)
-		_try_attack(delta)
+
+	if _knockback_t > 0.0:
+		# 넉백 중: chase 하지 않고 바닥에서 마찰 감속만
+		if is_on_floor():
+			velocity.x = move_toward(velocity.x, 0.0, FLOOR_FRICTION * delta)
+	else:
+		if _player:
+			_chase(delta)
+			_try_attack(delta)
+
 	move_and_slide()
 	queue_redraw()
 
@@ -60,12 +72,13 @@ func _try_attack(delta: float) -> void:
 func _cfg_sheet() -> String:
 	return "BasicEnemy"
 
-func take_damage(amount: float, _knockback: Vector2 = Vector2.ZERO) -> void:
+func take_damage(amount: float, kb: Vector2 = Vector2.ZERO) -> void:
 	if _is_dead: return
 	hp -= amount
 	_hit_flash = 0.12
-	if _knockback != Vector2.ZERO:
-		velocity = _knockback
+	if kb != Vector2.ZERO:
+		velocity      = kb
+		_knockback_t  = KNOCKBACK_DUR
 	if hp <= 0.0:
 		_die()
 
