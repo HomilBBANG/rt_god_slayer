@@ -1,0 +1,10 @@
+# Godot 4 auto-generated files
+.godot/
+
+# Export presets
+export_presets.cfg
+
+# Mono/C# builds
+.mono/
+data_*/
+mono_crash.*.json

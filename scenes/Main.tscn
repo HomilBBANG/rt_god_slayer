@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://b0main001"]
+
+[ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://b0player01" path="res://scenes/Player.tscn" id="2_player"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(5000, 40)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Stage" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Stage"]
+position = Vector2(640, 680)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Stage/Floor"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="Player" parent="Entities" instance=ExtResource("2_player")]
+position = Vector2(200, 600)
