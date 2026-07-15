@@ -7,7 +7,7 @@ var exp_lbl : Label
 var gold_lbl : Label
 var level_lbl : Label
 
-var _player : Node = null
+var _player = null
 
 func _ready() -> void:
 	_build_ui()

@@ -206,10 +206,13 @@ func _hit_enemies(damage: float, range_x: float, range_y: float) -> void:
 	if shape and shape.shape is RectangleShape2D:
 		(shape.shape as RectangleShape2D).size = Vector2(range_x, range_y)
 	atk_area.monitoring = true
-	for body in atk_area.get_overlapping_bodies():
-		if body.has_method("take_damage"):
-			var kb := Vector2(facing_right ? KNOCKBACK_FORCE : -KNOCKBACK_FORCE, -120.0)
-			body.take_damage(damage, kb)
+	var kbx := KNOCKBACK_FORCE if facing_right else -KNOCKBACK_FORCE
+	for body in get_tree().get_nodes_in_group("enemy"):
+		if not body.has_method("take_damage"): continue
+		var diff: Vector2 = body.global_position - global_position
+		var in_range_x := diff.x > 0.0 if facing_right else diff.x < 0.0
+		if in_range_x and abs(diff.x) < range_x and abs(diff.y) < range_y + 20.0:
+			body.take_damage(damage, Vector2(kbx, -120.0))
 	atk_area.monitoring = false
 
 func _calc_dmg(base: float) -> float:

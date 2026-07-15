@@ -21,6 +21,7 @@ var _hit_flash   := 0.0
 signal died
 
 func _ready() -> void:
+	add_to_group("enemy")
 	_player = get_tree().get_first_node_in_group("player")
 
 func _physics_process(delta: float) -> void:
