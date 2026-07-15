@@ -222,7 +222,7 @@ func _calc_dmg(base: float) -> float:
 # ── 피격 ──────────────────────────────────────────────────
 func take_damage(amount: float, knockback: Vector2 = Vector2.ZERO) -> void:
 	if iframe_timer > 0.0 or is_dead: return
-	var actual := max(1.0, amount - defense)
+	var actual: float = maxf(1.0, amount - defense)
 	hp -= actual
 	iframe_timer = HIT_IFRAMES
 	if knockback != Vector2.ZERO:

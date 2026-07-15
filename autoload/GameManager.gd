@@ -41,7 +41,7 @@ func has_perk(perk: String) -> bool:
 	return perk in perks
 
 func get_upgrade_bonus(stat: String) -> float:
-	var level := upgrades.get(stat, 0)
+	var level: int = upgrades.get(stat, 0)
 	match stat:
 		"max_hp": return level * 0.10
 		"atk":    return level * 0.05
@@ -67,7 +67,7 @@ func load_save() -> void:
 	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
 	if not file:
 		return
-	var result := JSON.parse_string(file.get_as_text())
+	var result = JSON.parse_string(file.get_as_text())
 	if result is Dictionary:
 		total_exp = result.get("total_exp", 0)
 		deaths = result.get("deaths", 0)

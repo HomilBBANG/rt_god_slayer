@@ -27,12 +27,26 @@ position = Vector2(640, 680)
 [node name="FloorCol" type="CollisionShape2D" parent="Stage/Floor"]
 shape = SubResource("Floor_shape")
 
+[node name="Visual" type="ColorRect" parent="Stage/Floor"]
+offset_left = -1000.0
+offset_top = -20.0
+offset_right = 1000.0
+offset_bottom = 20.0
+color = Color(0.35, 0.35, 0.40, 1)
+
 [node name="Platform1" type="StaticBody2D" parent="Stage"]
 collision_layer = 4
 position = Vector2(350, 530)
 
 [node name="Plat1Col" type="CollisionShape2D" parent="Stage/Platform1"]
 shape = SubResource("Plat_shape")
+
+[node name="Visual" type="ColorRect" parent="Stage/Platform1"]
+offset_left = -140.0
+offset_top = -10.0
+offset_right = 140.0
+offset_bottom = 10.0
+color = Color(0.45, 0.45, 0.50, 1)
 
 [node name="Platform2" type="StaticBody2D" parent="Stage"]
 collision_layer = 4
@@ -41,8 +55,15 @@ position = Vector2(750, 430)
 [node name="Plat2Col" type="CollisionShape2D" parent="Stage/Platform2"]
 shape = SubResource("Plat2_shape")
 
+[node name="Visual" type="ColorRect" parent="Stage/Platform2"]
+offset_left = -100.0
+offset_top = -10.0
+offset_right = 100.0
+offset_bottom = 10.0
+color = Color(0.45, 0.45, 0.50, 1)
+
 [node name="Ladder1" parent="Stage" instance=ExtResource("5_ladder")]
-position = Vector2(490, 530)
+position = Vector2(490, 480)
 
 [node name="Enemies" type="Node2D" parent="."]
 
