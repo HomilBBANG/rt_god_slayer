@@ -1,6 +1,21 @@
 extends Node
 
-# 영구 데이터 (죽어도 유지)
+# ── 밸런스 설정 (tools/balance.xlsx → data/balance.json) ──
+var cfg: Dictionary = {}
+
+const BALANCE_PATH := "res://data/balance.json"
+
+func cfg_f(sheet: String, key: String, default: float) -> float:
+	if cfg.has(sheet) and cfg[sheet].has(key):
+		return float(cfg[sheet][key])
+	return default
+
+func cfg_i(sheet: String, key: String, default: int) -> int:
+	if cfg.has(sheet) and cfg[sheet].has(key):
+		return int(cfg[sheet][key])
+	return default
+
+# ── 영구 데이터 (죽어도 유지) ─────────────────────────────
 var total_exp: int = 0
 var deaths: int = 0
 var upgrades := {
@@ -16,7 +31,18 @@ var perks: Array[String] = []
 const SAVE_PATH := "user://save.json"
 
 func _ready() -> void:
+	_load_balance()
 	load_save()
+
+func _load_balance() -> void:
+	if not FileAccess.file_exists(BALANCE_PATH):
+		push_warning("GameManager: balance.json 없음 — 기본값 사용")
+		return
+	var file := FileAccess.open(BALANCE_PATH, FileAccess.READ)
+	if not file: return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		cfg = parsed
 
 func start_run() -> void:
 	run_gold = 0

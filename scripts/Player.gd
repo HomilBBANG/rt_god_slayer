@@ -2,29 +2,29 @@ extends CharacterBody2D
 
 class_name Player
 
-# ── 상수 ──────────────────────────────────────────────────
-const MOVE_SPEED      := 220.0
-const CROUCH_MULT     := 0.5
-const JUMP_VEL        := -480.0
-const GRAVITY         := 900.0
-const DASH_SPEED      := 650.0
-const DASH_DUR        := 0.18
-const DASH_CD         := 0.7
-const DASH_SP_COST    := 20.0
-const SP_REGEN        := 22.0
-const MP_REGEN        := 5.0
-const HIT_IFRAMES     := 0.5
-const KNOCKBACK_FORCE := 320.0
+# ── 런타임 설정값 (balance.json에서 로드) ─────────────────
+var MOVE_SPEED      : float = 220.0
+var CROUCH_MULT     : float = 0.5
+var JUMP_VEL        : float = -480.0
+var GRAVITY         : float = 900.0
+var DASH_SPEED      : float = 650.0
+var DASH_DUR        : float = 0.18
+var DASH_CD         : float = 0.7
+var DASH_SP_COST    : float = 20.0
+var SP_REGEN        : float = 22.0
+var MP_REGEN        : float = 5.0
+var HIT_IFRAMES     : float = 0.5
+var KNOCKBACK_FORCE : float = 320.0
 
-# ── 스탯 ──────────────────────────────────────────────────
-var max_hp   : float = 100.0
-var hp       : float = 100.0
-var max_sp   : float = 100.0
-var sp       : float = 100.0
-var max_mp   : float = 80.0
-var mp       : float = 80.0
-var base_atk : float = 20.0
-var defense  : float = 0.0
+# ── 스탯 (balance.json에서 로드) ──────────────────────────
+var max_hp      : float = 100.0
+var hp          : float = 100.0
+var max_sp      : float = 100.0
+var sp          : float = 100.0
+var max_mp      : float = 80.0
+var mp          : float = 80.0
+var base_atk    : float = 20.0
+var defense     : float = 0.0
 var crit_chance : float = 0.08
 var crit_mult   : float = 1.8
 
@@ -58,7 +58,31 @@ signal stats_changed(h, mh, s, ms, m, mm)
 func _ready() -> void:
 	add_to_group("player")
 	atk_area.monitoring = false
+	_load_cfg()
 	_apply_upgrades()
+
+func _load_cfg() -> void:
+	var p := "Player"
+	MOVE_SPEED      = GameManager.cfg_f(p, "move_speed",       220.0)
+	CROUCH_MULT     = GameManager.cfg_f(p, "crouch_speed_mult", 0.5)
+	JUMP_VEL        = GameManager.cfg_f(p, "jump_velocity",   -480.0)
+	GRAVITY         = GameManager.cfg_f(p, "gravity",          900.0)
+	DASH_SPEED      = GameManager.cfg_f(p, "dash_speed",       650.0)
+	DASH_DUR        = GameManager.cfg_f(p, "dash_duration",     0.18)
+	DASH_CD         = GameManager.cfg_f(p, "dash_cooldown",     0.7)
+	DASH_SP_COST    = GameManager.cfg_f(p, "dash_sp_cost",      20.0)
+	SP_REGEN        = GameManager.cfg_f(p, "sp_regen",          22.0)
+	MP_REGEN        = GameManager.cfg_f(p, "mp_regen",           5.0)
+	HIT_IFRAMES     = GameManager.cfg_f(p, "hit_iframes",        0.5)
+	KNOCKBACK_FORCE = GameManager.cfg_f(p, "knockback_force",  320.0)
+	max_hp      = GameManager.cfg_f(p, "max_hp",      100.0)
+	max_sp      = GameManager.cfg_f(p, "max_sp",      100.0)
+	max_mp      = GameManager.cfg_f(p, "max_mp",       80.0)
+	base_atk    = GameManager.cfg_f(p, "base_atk",     20.0)
+	defense     = GameManager.cfg_f(p, "defense",        0.0)
+	crit_chance = GameManager.cfg_f(p, "crit_chance",   0.08)
+	crit_mult   = GameManager.cfg_f(p, "crit_mult",     1.8)
+	hp = max_hp; sp = max_sp; mp = max_mp
 
 func _apply_upgrades() -> void:
 	max_hp  *= 1.0 + GameManager.get_upgrade_bonus("max_hp")
@@ -168,34 +192,46 @@ func _move() -> void:
 
 # ── 공격 ──────────────────────────────────────────────────
 func _attack() -> void:
+	var sp_cost: float = GameManager.cfg_f("Player", "special_sp_cost", 25.0)
+	var mp_cost: float = GameManager.cfg_f("Player", "magic_mp_cost",   18.0)
 	if Input.is_action_just_pressed("attack") and atk_cd <= 0.0:
 		_do_melee()
-	if Input.is_action_just_pressed("special") and sp_atk_cd <= 0.0 and sp >= 25.0:
+	if Input.is_action_just_pressed("special") and sp_atk_cd <= 0.0 and sp >= sp_cost:
 		_do_special()
-	if Input.is_action_just_pressed("magic") and magic_cd <= 0.0 and mp >= 18.0:
+	if Input.is_action_just_pressed("magic") and magic_cd <= 0.0 and mp >= mp_cost:
 		_do_magic()
 
 func _do_melee() -> void:
 	combo_count = (combo_count + 1) % 3
-	combo_reset_t = 0.6
-	atk_cd = 0.28
-	var dmg := _calc_dmg(base_atk * (1.0 + combo_count * 0.3))
-	_hit_enemies(dmg, 55.0, 28.0)
+	combo_reset_t = GameManager.cfg_f("Player", "combo_reset_time", 0.6)
+	atk_cd        = GameManager.cfg_f("Player", "melee_atk_cd",     0.28)
+	var mults := [
+		GameManager.cfg_f("Player", "melee_combo1_mult", 1.0),
+		GameManager.cfg_f("Player", "melee_combo2_mult", 1.3),
+		GameManager.cfg_f("Player", "melee_combo3_mult", 1.6),
+	]
+	var dmg := _calc_dmg(base_atk * mults[combo_count])
+	var rx: float = GameManager.cfg_f("Player", "melee_range_x", 55.0)
+	var ry: float = GameManager.cfg_f("Player", "melee_range_y", 28.0)
+	_hit_enemies(dmg, rx, ry)
 
 func _do_special() -> void:
-	sp -= 25.0
-	sp_atk_cd = 0.85
-	var dmg := _calc_dmg(base_atk * 1.7)
-	_hit_enemies(dmg, 85.0, 36.0)
+	sp        -= GameManager.cfg_f("Player", "special_sp_cost",  25.0)
+	sp_atk_cd  = GameManager.cfg_f("Player", "special_atk_cd",   0.85)
+	var mult: float = GameManager.cfg_f("Player", "special_atk_mult", 1.7)
+	var rx: float   = GameManager.cfg_f("Player", "special_range_x",  85.0)
+	var ry: float   = GameManager.cfg_f("Player", "special_range_y",  36.0)
+	_hit_enemies(_calc_dmg(base_atk * mult), rx, ry)
 
 func _do_magic() -> void:
-	mp -= 18.0
-	magic_cd = 0.65
+	mp       -= GameManager.cfg_f("Player", "magic_mp_cost",   18.0)
+	magic_cd  = GameManager.cfg_f("Player", "magic_cd",         0.65)
 	var proj_scene := load("res://scenes/Projectile.tscn") as PackedScene
 	if not proj_scene: return
 	var proj := proj_scene.instantiate()
 	proj.direction = Vector2(1.0 if facing_right else -1.0, 0.0)
-	proj.damage    = _calc_dmg(base_atk * 1.2)
+	proj.speed     = GameManager.cfg_f("Player", "magic_proj_speed", 480.0)
+	proj.damage    = _calc_dmg(base_atk * GameManager.cfg_f("Player", "magic_atk_mult", 1.2))
 	get_parent().add_child(proj)
 	proj.global_position = global_position + Vector2(24.0 * (1.0 if facing_right else -1.0), -28.0)
 

@@ -23,6 +23,10 @@ signal died
 func _ready() -> void:
 	add_to_group("enemy")
 	_player = get_tree().get_first_node_in_group("player")
+	_load_cfg()
+
+func _load_cfg() -> void:
+	pass  # 서브클래스에서 오버라이드
 
 func _physics_process(delta: float) -> void:
 	if _is_dead: return
@@ -47,8 +51,13 @@ func _try_attack(delta: float) -> void:
 	if global_position.distance_to(_player.global_position) < atk_range and _atk_timer <= 0.0:
 		_atk_timer = atk_cd
 		if _player.has_method("take_damage"):
-			var kb := Vector2(sign(_player.global_position.x - global_position.x) * 200.0, -80.0)
-			_player.take_damage(atk, kb)
+			var kbx: float = GameManager.cfg_f(_cfg_sheet(), "knockback_x", 200.0)
+			var kby: float = GameManager.cfg_f(_cfg_sheet(), "knockback_y", -80.0)
+			var dir: float = sign(_player.global_position.x - global_position.x)
+			_player.take_damage(atk, Vector2(dir * kbx, kby))
+
+func _cfg_sheet() -> String:
+	return "BasicEnemy"
 
 func take_damage(amount: float, _knockback: Vector2 = Vector2.ZERO) -> void:
 	if _is_dead: return

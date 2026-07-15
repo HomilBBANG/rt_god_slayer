@@ -1,0 +1,117 @@
+{
+  "Player": {
+    "max_hp": 100,
+    "max_sp": 100,
+    "max_mp": 80,
+    "sp_regen": 22,
+    "mp_regen": 5,
+    "move_speed": 220,
+    "crouch_speed_mult": 0.5,
+    "gravity": 900,
+    "jump_velocity": -480,
+    "dash_speed": 650,
+    "dash_duration": 0.18,
+    "dash_cooldown": 0.7,
+    "dash_sp_cost": 20,
+    "base_atk": 20,
+    "defense": 0,
+    "crit_chance": 0.08,
+    "crit_mult": 1.8,
+    "hit_iframes": 0.5,
+    "knockback_force": 320,
+    "melee_combo1_mult": 1,
+    "melee_combo2_mult": 1.3,
+    "melee_combo3_mult": 1.6,
+    "melee_range_x": 55,
+    "melee_range_y": 28,
+    "melee_atk_cd": 0.28,
+    "combo_reset_time": 0.6,
+    "special_atk_mult": 1.7,
+    "special_range_x": 85,
+    "special_range_y": 36,
+    "special_atk_cd": 0.85,
+    "special_sp_cost": 25,
+    "magic_atk_mult": 1.2,
+    "magic_proj_speed": 480,
+    "magic_cd": 0.65,
+    "magic_mp_cost": 18
+  },
+  "BasicEnemy": {
+    "max_hp": 60,
+    "atk": 12,
+    "move_spd": 75,
+    "gravity": 900,
+    "atk_range": 40,
+    "atk_cd": 1.2,
+    "knockback_x": 200,
+    "knockback_y": -80,
+    "exp_reward": 15,
+    "gold_reward": 8
+  },
+  "Platforms": [
+    {
+      "name": "Floor",
+      "pos_x": 640.0,
+      "pos_y": 680.0,
+      "width": 2000.0,
+      "height": 40.0,
+      "note": "바닥"
+    },
+    {
+      "name": "Platform1",
+      "pos_x": 350.0,
+      "pos_y": 530.0,
+      "width": 280.0,
+      "height": 20.0,
+      "note": "중간 발판 1"
+    },
+    {
+      "name": "Platform2",
+      "pos_x": 750.0,
+      "pos_y": 430.0,
+      "width": 200.0,
+      "height": 20.0,
+      "note": "중간 발판 2"
+    },
+    {
+      "name": "Ladder1",
+      "pos_x": 490.0,
+      "pos_y": 480.0,
+      "width": 30.0,
+      "height": 120.0,
+      "note": "사다리 (Area2D)"
+    },
+    {
+      "name": "Enemy1",
+      "pos_x": 500.0,
+      "pos_y": 640.0,
+      "width": 0.0,
+      "height": 0.0,
+      "note": "적 스폰 위치"
+    },
+    {
+      "name": "Enemy2",
+      "pos_x": 750.0,
+      "pos_y": 640.0,
+      "width": 0.0,
+      "height": 0.0,
+      "note": "적 스폰 위치"
+    },
+    {
+      "name": "Enemy3",
+      "pos_x": 900.0,
+      "pos_y": 640.0,
+      "width": 0.0,
+      "height": 0.0,
+      "note": "적 스폰 위치"
+    },
+    {
+      "name": "Player",
+      "pos_x": 200.0,
+      "pos_y": 600.0,
+      "width": 0.0,
+      "height": 0.0,
+      "note": "플레이어 시작 위치"
+    }
+  ]
+}

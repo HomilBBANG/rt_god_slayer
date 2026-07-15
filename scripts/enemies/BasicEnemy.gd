@@ -2,14 +2,17 @@ extends EnemyBase
 
 func _ready() -> void:
 	super._ready()
-	max_hp   = 60.0
-	hp       = 60.0
-	atk      = 12.0
-	move_spd = 75.0
-	atk_range = 40.0
-	atk_cd   = 1.2
-	exp_reward  = 15
-	gold_reward = 8
+
+func _load_cfg() -> void:
+	var e := "BasicEnemy"
+	max_hp      = GameManager.cfg_f(e, "max_hp",       60.0)
+	hp          = max_hp
+	atk         = GameManager.cfg_f(e, "atk",          12.0)
+	move_spd    = GameManager.cfg_f(e, "move_spd",     75.0)
+	atk_range   = GameManager.cfg_f(e, "atk_range",    40.0)
+	atk_cd      = GameManager.cfg_f(e, "atk_cd",        1.2)
+	exp_reward  = GameManager.cfg_i(e, "exp_reward",    15)
+	gold_reward = GameManager.cfg_i(e, "gold_reward",    8)
 
 func _draw() -> void:
 	var col := _get_body_color()
