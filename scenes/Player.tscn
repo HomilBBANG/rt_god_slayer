@@ -1,23 +1,44 @@
-[gd_scene load_steps=3 format=3 uid="uid://b0player01"]
+[gd_scene load_steps=6 format=3 uid="uid://b0player01"]
 
 [ext_resource type="Script" path="res://scripts/Player.gd" id="1_player"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
-radius = 20.0
-height = 80.0
+[sub_resource type="CapsuleShape2D" id="Cap_stand"]
+radius = 14.0
+height = 56.0
+
+[sub_resource type="CapsuleShape2D" id="Cap_crouch"]
+radius = 14.0
+height = 28.0
+
+[sub_resource type="RectangleShape2D" id="Rect_atk"]
+size = Vector2(55, 32)
 
 [node name="Player" type="CharacterBody2D"]
+collision_layer = 1
+collision_mask = 4
 script = ExtResource("1_player")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="StandCol" type="CollisionShape2D" parent="."]
+position = Vector2(0, -28)
+shape = SubResource("Cap_stand")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 0)
-shape = SubResource("CapsuleShape2D_player")
+[node name="CrouchCol" type="CollisionShape2D" parent="."]
+position = Vector2(0, -14)
+shape = SubResource("Cap_crouch")
+disabled = true
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="AtkShape" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("Rect_atk")
+disabled = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 drag_horizontal_enabled = true
-limit_bottom = 720
-limit_top = 0
+drag_horizontal_offset = 0.1
+limit_left = 0
+limit_bottom = 800
