@@ -20,20 +20,7 @@ def parse_player(ws):
             data[str(key)] = val
     return data
 
-def parse_platforms(ws):
-    rows = []
-    for row in ws.iter_rows(min_row=2, values_only=True):
-        name, px, py, w, h, note = row
-        if name:
-            rows.append({
-                "name":   str(name),
-                "pos_x":  float(px  or 0),
-                "pos_y":  float(py  or 0),
-                "width":  float(w   or 0),
-                "height": float(h   or 0),
-                "note":   str(note or ""),
-            })
-    return rows
+SKIP_SHEETS = {"Platforms"}  # 씬에서 직접 편집하는 항목
 
 def main():
     if not os.path.exists(XLS):
@@ -45,11 +32,9 @@ def main():
     config = {}
 
     for sheet in wb.sheetnames:
-        ws = wb[sheet]
-        if sheet == "Platforms":
-            config["Platforms"] = parse_platforms(ws)
-        else:
-            config[sheet] = parse_player(ws)
+        if sheet in SKIP_SHEETS:
+            continue
+        config[sheet] = parse_player(wb[sheet])
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
