@@ -161,7 +161,7 @@ func _schedule_platform_restore() -> void:
 func _move() -> void:
 	if dash_timer > 0.0: return
 	var ax := Input.get_axis("move_left", "move_right")
-	var spd := MOVE_SPEED * (CROUCH_MULT if is_crouching else 1.0)
+	var spd: float = MOVE_SPEED * (CROUCH_MULT if is_crouching else 1.0)
 	spd *= 1.0 + GameManager.get_upgrade_bonus("spd")
 	velocity.x = ax * spd
 	if ax != 0.0: facing_right = ax > 0.0
@@ -200,17 +200,17 @@ func _do_magic() -> void:
 	proj.global_position = global_position + Vector2(24.0 * (1.0 if facing_right else -1.0), -28.0)
 
 func _hit_enemies(damage: float, range_x: float, range_y: float) -> void:
-	var offset := Vector2(range_x * 0.5 * (1.0 if facing_right else -1.0), -28.0)
-	atk_area.position = offset
+	var ox: float = range_x * 0.5 * (1.0 if facing_right else -1.0)
+	atk_area.position = Vector2(ox, -28.0)
 	var shape := atk_area.get_child(0) as CollisionShape2D
 	if shape and shape.shape is RectangleShape2D:
 		(shape.shape as RectangleShape2D).size = Vector2(range_x, range_y)
 	atk_area.monitoring = true
-	var kbx := KNOCKBACK_FORCE if facing_right else -KNOCKBACK_FORCE
+	var kbx: float = KNOCKBACK_FORCE if facing_right else -KNOCKBACK_FORCE
 	for body in get_tree().get_nodes_in_group("enemy"):
 		if not body.has_method("take_damage"): continue
 		var diff: Vector2 = body.global_position - global_position
-		var in_range_x := diff.x > 0.0 if facing_right else diff.x < 0.0
+		var in_range_x: bool = diff.x > 0.0 if facing_right else diff.x < 0.0
 		if in_range_x and abs(diff.x) < range_x and abs(diff.y) < range_y + 20.0:
 			body.take_damage(damage, Vector2(kbx, -120.0))
 	atk_area.monitoring = false
@@ -248,7 +248,7 @@ func exit_ladder() -> void:
 
 # ── 시각 (placeholder) ────────────────────────────────────
 func _draw() -> void:
-	var alpha := 0.35 if iframe_timer > 0.0 and fmod(iframe_timer, 0.1) < 0.05 else 1.0
+	var alpha: float = 0.35 if iframe_timer > 0.0 and fmod(iframe_timer, 0.1) < 0.05 else 1.0
 	var col := Color(0.18, 0.42, 0.90, alpha)
 
 	if is_crouching:
@@ -259,8 +259,8 @@ func _draw() -> void:
 		draw_circle(Vector2(0, -64), 12, col)
 
 	# 방향 표시 눈
-	var eye_x := 6.0 if facing_right else -14.0
-	var eye_y := -62.0 if not is_crouching else -22.0
+	var eye_x: float = 6.0 if facing_right else -14.0
+	var eye_y: float = -62.0 if not is_crouching else -22.0
 	draw_rect(Rect2(eye_x, eye_y, 8, 7), Color.WHITE)
 
 	# 대시 중 잔상
